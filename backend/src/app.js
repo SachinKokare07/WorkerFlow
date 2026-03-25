@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const authRouter = require("./routes/auth.route");
 const employeeRouter = require("./routes/employee.route");
+const attendanceRouter = require("./routes/attendance.route")
 
 const app = express();
 
@@ -10,5 +11,6 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
 app.use("/api/employees", employeeRouter);
+app.use("/api/attendance", attendanceRouter);
 
 module.exports = app;
