@@ -52,33 +52,41 @@ async function markAttendance(req, res) {
   }
 }
 
-async function getAttendanceByEmployee(req,res) {
-  try{
-    const {employeeId} = req.params;
-    const employee = await employeeModel.findById(employeeId);
-    if(!employee){
-      return res.status(404).json({
-        message : "employee doesn't exist"
-      })
-    }
-    if(employee.employerId.toString()!==req.user.id){
-      return res.status(403).json({
-        message : "Access denied"
-      })
-    }
-    const attendance = await attendanceModel.find({employeeId}).sort({date : -1});
-    
-    res.status(201).json({
-      attendance
-    })
+async function getAttendanceByEmployee(req, res) {
+  try {
 
+    const { employeeId } = req.params;
+
+    const employee = await employeeModel.findById(employeeId);
+
+    if (!employee) {
+      return res.status(404).json({
+        message: "Employee not found"
+      });
+    }
+
+    if (employee.employerId.toString() !== req.user.id) {
+      return res.status(403).json({
+        message: "Access denied"
+      });
+    }
+
+    const attendance = await attendanceModel
+      .find({ employeeId })
+      .populate("employeeId", "name email position")
+      .select("-__v")
+      .sort({ date: -1 });
+
+    res.status(200).json({
+      attendance
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Server error",
+      error: err.message
+    });
   }
-  catch(err){
-    return res.status(500).json({
-      message : "Server Error",
-      error : err.message
-    })
-  }
-  
 }
+
 module.exports = { markAttendance, getAttendanceByEmployee };

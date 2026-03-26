@@ -15,7 +15,8 @@ const employeeSchema = new mongoose.Schema({
 
   password: {
     type: String,
-    required: true
+    required: true,
+    select: false
   },
 
   phone: {

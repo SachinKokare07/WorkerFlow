@@ -35,10 +35,15 @@ async function registerUser(req, res) {
       { expiresIn: "7d" }
     );
 
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true
+    });
 
+    const { password: _, ...safeEmployer } = employer.toObject();
+    
     res.status(201).json({
-      message: "User registered successfully"
+      message: "User registered successfully",
+      employer : safeEmployer
     });
 
   } catch (error) {
@@ -82,10 +87,11 @@ async function loginUser(req, res) {
     );
 
     res.cookie("token", token, { httpOnly: true });
+    const { password: _, ...safeUser } = user.toObject();
 
     res.status(200).json({
       message: "Login successful",
-      role: user.role
+      user : safeUser
     });
 
   } catch (err) {

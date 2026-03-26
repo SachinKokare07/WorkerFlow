@@ -26,9 +26,10 @@ async function createEmployee(req, res) {
       employerId: req.user.id
     });
 
+    const { password:_, ...safeEmployee } = employee.toObject();
     res.status(201).json({
       message: "Employee created successfully",
-      employee
+      employee: safeEmployee
     });
 
   } catch (err) {
@@ -41,11 +42,12 @@ async function createEmployee(req, res) {
 
 async function getEmployees(req,res) {
   try{
-    const employees = await employeeModel.find({
+    const employee = await employeeModel.find({
       employerId : req.user.id
     })
+
     res.status(200).json({
-      employee : employees
+      employee : employee
     });
   }
   catch(err){
