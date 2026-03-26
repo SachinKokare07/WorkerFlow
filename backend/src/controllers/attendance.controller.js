@@ -1,3 +1,4 @@
+const { get } = require('mongoose');
 const attendanceModel = require('../models/attendance.model');
 const employeeModel = require('../models/employee.model');
 
@@ -51,4 +52,33 @@ async function markAttendance(req, res) {
   }
 }
 
-module.exports = { markAttendance };
+async function getAttendanceByEmployee(req,res) {
+  try{
+    const {employeeId} = req.params;
+    const employee = await employeeModel.findById(employeeId);
+    if(!employee){
+      return res.status(404).json({
+        message : "employee doesn't exist"
+      })
+    }
+    if(employee.employerId.toString()!==req.user.id){
+      return res.status(403).json({
+        message : "Access denied"
+      })
+    }
+    const attendance = await attendanceModel.find({employeeId}).sort({date : -1});
+    
+    res.status(201).json({
+      attendance
+    })
+
+  }
+  catch(err){
+    return res.status(500).json({
+      message : "Server Error",
+      error : err.message
+    })
+  }
+  
+}
+module.exports = { markAttendance, getAttendanceByEmployee };

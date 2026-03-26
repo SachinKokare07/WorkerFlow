@@ -5,5 +5,6 @@ const attendanceController = require('../controllers/attendance.controller');
 const router = express.Router();
 
 router.post('/', authMiddleware, attendanceController.markAttendance);
+router.get('/:employeeId',authMiddleware,attendanceController.getAttendanceByEmployee);
 
 module.exports = router;
