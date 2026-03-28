@@ -60,4 +60,40 @@ async function getLeaves(req,res) {
   
 }
 
-module.exports = {requestLeave,getLeaves};
+async function updateLeaveStatus(req,res) {
+  try{
+    const {status} = req.body;
+
+    if(!["approved", "rejected"].includes(status)){
+      return res.status(400).json({
+        message : "Invalid Status"
+      })
+    }
+
+    const leave = await leaveModel.findById(req.params.id);
+    if(!leave){
+      return res.status(404).json({
+        message : "leave doesn't exist"
+      })
+    }
+    if(leave.employerId.toString()!==req.user.id){
+      return res.status(403).json({
+        message : "Access Denied"
+      })
+    }
+    leave.status = status;
+    await leave.save();
+    res.status(201).json({
+      message : "Leave updated successfully",
+      leave
+    })
+  }
+  catch(err){
+    return res.status(500).json({
+      message : "Server Error",
+      error : err.message
+    })
+  }
+}
+
+module.exports = {requestLeave,getLeaves,updateLeaveStatus};
