@@ -62,4 +62,27 @@ async function calculateSalary(req, res) {
   }
 }
 
-module.exports = { calculateSalary };
+async function getSalaryHistory(req,res) {
+  try{
+    const { employeeId} = req.params.id;
+    const employee = employeeModel.findById(employeeId);
+    if(!employee){
+      return res.status(404).json({
+        message : "Employee not found"
+      })
+    }
+    const salaries = await salaryModel.find({employeeId : req.params.id}).sort({createdAt : -1});
+    res.status(201).json({
+      salaries
+    })
+  }
+  catch(err){
+    return res.status(500).json({
+      message : "Server error",
+      error : err.message
+    })
+  }
+  
+}
+
+module.exports = { calculateSalary,getSalaryHistory };
